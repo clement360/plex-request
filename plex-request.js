@@ -8,19 +8,33 @@ if (Meteor.isClient) {
     }
   });
 
-  Template.body.events({
-  	"submit .new-request": function (event) {
-  		var text = event.target.text.value;
+  Template.requestForm.events({
+    'submit form': function(){
+      var title = $('#newRequestTitle').val();
+      var name = $('#newRequestName').val();
 
-  		Requests.insert({
-  			text: text,
-  			createdAt: new Date()
-  		});
+      if (title.length < 1) {
+        $('#newRequestTitle').effect( "shake" );
+      } else if (name.length < 1) {
+        $('#newRequestName').effect( "shake" );
+      } else {
+        Requests.insert({
+          title: title,
+          name: name,     
+          createdAt: new Date()
+        });
 
-  		event.target.text.value = "";
+        $('#newRequestTitle').val('');
+        $('#newRequestName').val('');
+        $('#newRequestName').slideUp();
+      };
 
-  		return false;
-  	}
+      return false;
+    },
+    "focus #newRequestTitle": function (event) {
+      $(event.target).siblings('#newRequestName').slideDown();
+      return false;
+    }
   });
 
   Template.request.events({

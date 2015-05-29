@@ -1,3 +1,10 @@
+/*
+  Bootstrap media queries
+    @media(min-width:768px){}
+    @media(min-width:992px){}
+    @media(min-width:1200px){}
+*/
+
 /* CSS declarations go here */
 body {
   font-family: sans-serif;
@@ -19,10 +26,20 @@ body {
   padding: 20px 15px 80px 15px;
 }
 
+#newRequestName {
+  border-top: 2px solid rgba(213, 213, 213, 0.54);
+}
+
 header {
   background-image: linear-gradient(to bottom, rgba(85, 231, 198, 0.85), rgba(255, 255, 255, 0) 100%);
   padding: 20px 15px 30px 15px;
   position: relative;
+}
+
+@media(max-width:767px){
+  .col-sm-6 {
+    padding: 0px;
+  }
 }
 
 #login-buttons {
@@ -57,13 +74,10 @@ form {
   padding-left: 10px;
 }
 
-.new-task input:focus{
-  outline: 0;
-}
-
 ul {
   margin: 0;
   padding: 0;
+  word-break: break-all;
 }
 
 .delete {
@@ -81,6 +95,11 @@ li {
   list-style: none;
   padding: 15px;
   border-bottom: #3DA99D solid 2px;
+
+  .name{
+    color: rgba(255, 255, 255, 0.63);
+    font-size: .7em;
+  }
 }
 
 li .text {

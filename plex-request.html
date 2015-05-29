@@ -1,5 +1,6 @@
 <head>
-  <title>simple-todos</title>
+  <title>Plex Request</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
 </head>
 
 <body>
@@ -10,9 +11,7 @@
           <h1>Plex Requests</h1>
 
           <!-- add a form below the h1 -->
-          <form class="new-request">
-            <input type="text" name="text" placeholder="Type to add new requests" />
-          </form>
+          {{> requestForm}}
         </header>
 
         <ul>
@@ -37,12 +36,20 @@
   </div>
 </body>
 
+<template name="requestForm">
+    <form class="new-request">
+        <input type="text" name="text" id="newRequestTitle" placeholder="Type in request title" />
+        <input type="text" hidden name="text" id="newRequestName" placeholder="Type in requester's name" />
+        <input type="submit" hidden name="text" />
+    </form>
+</template>
+
 <template name="request">
   {{#unless checked}}
     <li>
       <button class="delete">&times;</button>
       <input type="checkbox" checked="{{checked}}" class="toggle-checked" />
-      <span class="text">{{text}}</span>
+      <span class="text">{{title}}<span class="name"> requested by {{name}}</span></span>
     </li>
   {{/unless}}
 </template>
@@ -52,7 +59,7 @@
     <li class="checked">
       <button class="delete">&times;</button>
       <input type="checkbox" checked="{{checked}}" class="toggle-checked" />
-      <span class="text">{{text}}</span>
+      <span class="text">{{title}}<span class="name"> requested by {{name}}</span></span>
     </li>
   {{/if}}
 </template>
