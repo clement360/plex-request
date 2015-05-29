@@ -1,0 +1,58 @@
+<head>
+  <title>simple-todos</title>
+</head>
+
+<body>
+  <div class="container">
+    <div class="row">
+      <div class="col-sm-6">
+        <header>
+          <h1>Plex Requests</h1>
+
+          <!-- add a form below the h1 -->
+          <form class="new-request">
+            <input type="text" name="text" placeholder="Type to add new requests" />
+          </form>
+        </header>
+
+        <ul>
+          {{#each requests}}
+            {{> request}}
+          {{/each}}
+        </ul>
+      </div>
+
+      <div class="col-sm-6">
+        <header id="completedHeader">
+          <h1>Completed Requests</h1>
+        </header>
+
+        <ul>
+          {{#each requests}}
+            {{> completeRequest}}
+          {{/each}}
+        </ul>
+      </div>
+    </div>
+  </div>
+</body>
+
+<template name="request">
+  {{#unless checked}}
+    <li>
+      <button class="delete">&times;</button>
+      <input type="checkbox" checked="{{checked}}" class="toggle-checked" />
+      <span class="text">{{text}}</span>
+    </li>
+  {{/unless}}
+</template>
+
+<template name="completeRequest">
+  {{#if checked}}
+    <li class="checked">
+      <button class="delete">&times;</button>
+      <input type="checkbox" checked="{{checked}}" class="toggle-checked" />
+      <span class="text">{{text}}</span>
+    </li>
+  {{/if}}
+</template>
