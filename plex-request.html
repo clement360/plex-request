@@ -7,10 +7,9 @@
   <div class="container">
     <div class="row">
       <div class="col-sm-6">
-        <header>
-          <h1>Plex Requests</h1>
-
-          <!-- add a form below the h1 -->
+        <header id="requestHeader">
+          <h1>Plex Requests ({{incompleteCount}})</h1>
+          {{> loginButtons}}
           {{> requestForm}}
         </header>
 
@@ -37,17 +36,19 @@
 </body>
 
 <template name="requestForm">
-    <form class="new-request">
-        <input type="text" name="text" id="newRequestTitle" placeholder="Type in request title" />
-        <input type="text" hidden name="text" id="newRequestName" placeholder="Type in requester's name" />
-        <input type="submit" hidden name="text" />
-    </form>
+    {{#if currentUser}}
+      <form class="new-request">
+          <input type="text" name="text" id="newRequestTitle" placeholder="Type in request title" />
+      </form>
+    {{/if}}
 </template>
 
 <template name="request">
   {{#unless checked}}
-    <li>
-      <button class="delete">&times;</button>
+    <li class="{{#if checked}}checked{{/if}}">
+      {{#if isOwner}}
+        <button class="delete">&times;</button>
+      {{/if}}
       <input type="checkbox" checked="{{checked}}" class="toggle-checked" />
       <span class="text">{{title}}<span class="name"> requested by {{name}}</span></span>
     </li>
@@ -57,7 +58,9 @@
 <template name="completeRequest">
   {{#if checked}}
     <li class="checked">
-      <button class="delete">&times;</button>
+      {{#if isOwner}}
+        <button class="delete">&times;</button>
+      {{/if}}
       <input type="checkbox" checked="{{checked}}" class="toggle-checked" />
       <span class="text">{{title}}<span class="name"> requested by {{name}}</span></span>
     </li>

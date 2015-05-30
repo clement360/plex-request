@@ -1,3 +1,5 @@
-{
-    "slack" : "https://theiaseed.slack.com/services/hooks/incoming-webhook?token=xoxp-5062223662-5062223694-5120829904-9272a4"
+{ 
+   "slack" : {
+       "token" : "xoxp-5062223662-5062223694-5120829904-9272a4"
+   }
 }
