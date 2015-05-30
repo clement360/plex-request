@@ -1,7 +1,5 @@
 Requests = new Mongo.Collection("requests");
 
-var prod = false;
-
 if (Meteor.isClient) {
 
   Meteor.subscribe("requests");
@@ -24,7 +22,7 @@ if (Meteor.isClient) {
       } else {
         $('#newRequestTitle').val('');
         Meteor.call("addTask", title);
-        Meteor.call('slack', title, name);
+        Meteor.call('slack', title, Meteor.user().username);
       };
 
       return false;
@@ -63,7 +61,7 @@ if (Meteor.isClient) {
       return this.owner === Meteor.userId();
     }
   });
-  
+
   Accounts.ui.config({
     passwordSignupFields: "USERNAME_ONLY"
   });
@@ -88,16 +86,14 @@ if (Meteor.isServer) {
     });
 
     Meteor.methods({
-      slack: function (title, name, time) {
+      slack: function (title, name) {
         var time = new Date();
         time = moment(time).format('l LT');
 
         var icon_url = "http%3A%2F%2Ficons.iconarchive.com%2Ficons%2Fthebadsaint%2Fmy-mavericks-part-2%2F128%2FPlex-icon.png";
         var postMessage = "New plex request from " + name + ": " + title + " @ " + time;
         var token = Meteor.settings.slack.token;
-        if(prod) {
-          HTTP.post("https://slack.com/api/chat.postMessage?token="+token+"&channel=C051U8PCQ&text="+postMessage+"&username=Plex%20Request%20Bot&icon_url="+icon_url+"&pretty=1");
-        }
+        HTTP.post("https://slack.com/api/chat.postMessage?token="+token+"&channel=C051U8PCQ&text="+postMessage+"&username=Plex%20Request%20Bot&icon_url="+icon_url+"&pretty=1");
       },
 
       addTask: function (title, time) {
