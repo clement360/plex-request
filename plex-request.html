@@ -49,10 +49,12 @@
 <template name="request">
   {{#unless checked}}
     <li class="{{#if checked}}checked{{/if}}">
-      {{#if isOwner}}
+      {{#if isAdminOrOwner}}
         <button class="delete">&times;</button>
       {{/if}}
-      <input type="checkbox" checked="{{checked}}" class="toggle-checked" />
+      {{#if isInRole 'admin'}}
+        <input type="checkbox" checked="{{checked}}" class="toggle-checked" />
+      {{/if}}
       <span class="text">{{title}}<span class="name"> requested by {{name}}</span></span>
     </li>
   {{/unless}}
@@ -61,10 +63,12 @@
 <template name="completeRequest">
   {{#if checked}}
     <li class="checked">
-      {{#if isOwner}}
+      {{#if isAdminOrOwner}}
         <button class="delete">&times;</button>
       {{/if}}
-      <input type="checkbox" checked="{{checked}}" class="toggle-checked" />
+      {{#if isInRole 'admin'}}
+        <input type="checkbox" checked="{{checked}}" class="toggle-checked" />
+      {{/if}}
       <span class="text">{{title}}<span class="name"> requested by {{name}}</span></span>
     </li>
   {{/if}}

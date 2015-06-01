@@ -41,11 +41,6 @@ if (Meteor.isClient) {
     }
   });
 
-  Template.request.helpers({
-    isOwner: function() {
-      return this.owner === Meteor.userId();
-    }
-  });
 
   Template.completeRequest.events({
     "click .toggle-checked": function () {
@@ -55,11 +50,17 @@ if (Meteor.isClient) {
       Meteor.call("deleteTask", this._id);
     }
   });
+  
+  /* ------------------------------------------------
+  ----------------- Global Helpers ------------------
+  -------------------------------------------------*/
 
-  Template.completeRequest.helpers({
-    isOwner: function() {
-      return this.owner === Meteor.userId();
-    }
+  Template.registerHelper('isOwner', function () {
+    return this.owner === Meteor.userId();
+  });
+
+  Template.registerHelper('isAdminOrOwner', function () {
+    return (Roles.userIsInRole(this._id, 'admin') || this.owner === Meteor.userId());
   });
 
   Accounts.ui.config({
@@ -75,8 +76,11 @@ if (Meteor.isClient) {
 
 if (Meteor.isServer) {
   Meteor.startup(function () {
+    Meteor.publish(null, function (){ 
+      return Meteor.roles.find({})
+    })
 
-     Meteor.publish("requests", function () {
+    Meteor.publish("requests", function () {
       return Requests.find({
         $or: [
           { private: {$ne: true} },
@@ -85,6 +89,9 @@ if (Meteor.isServer) {
       });
     });
 
+    debugger;
+    clement = Meteor.users.findOne({username: "clement"});
+    Roles.addUsersToRoles(clement._id, 'admin');
     Meteor.methods({
       slack: function (title, name) {
         var time = new Date();

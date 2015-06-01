@@ -7,6 +7,7 @@
 
 // Variables
 @inputColor: rgba(0, 0, 0, 0.15);
+@buttonColor: rgba(255, 255, 255, 0.29);
 
 /* CSS declarations go here */
 body {
@@ -29,16 +30,17 @@ body {
   width: 100%;
   margin-top: 9px;
   padding: 9px;
-  color: darkgrey;
-  background: @inputColor
+  color: white;
+  cursor: pointer;
+  background: @buttonColor;
 }
 
 #plexBtn:hover {
   width: 100%;
   margin-top: 9px;
   padding: 9px;
-  color: darkgrey;
-  background: rgba(63, 63, 63, 0.97);
+  color: white;
+  background: @inputColor;
 }
 
 #newRequestName {
@@ -76,7 +78,7 @@ header {
 #login-buttons {
   border-radius: 6px;
   margin-top: 0px;
-  background-color: rgba(255, 255, 255, 0.29);
+  background-color: @buttonColor;
   padding: 11px;
 }
 
