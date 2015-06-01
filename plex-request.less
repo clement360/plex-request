@@ -1,0 +1,200 @@
+/*
+  Bootstrap media queries
+    @media(min-width:768px){}
+    @media(min-width:992px){}
+    @media(min-width:1200px){}
+*/
+
+// Variables
+@inputColor: rgba(0, 0, 0, 0.15);
+
+/* CSS declarations go here */
+body {
+  font-family: sans-serif;
+  background: url(images/stardust.png);
+
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+
+  padding: 0;
+  margin: 0;
+
+  font-size: 14px;
+}
+
+#plexBtn {
+  width: 100%;
+  margin-top: 9px;
+  padding: 9px;
+  color: darkgrey;
+  background: @inputColor
+}
+
+#plexBtn:hover {
+  width: 100%;
+  margin-top: 9px;
+  padding: 9px;
+  color: darkgrey;
+  background: rgba(63, 63, 63, 0.97);
+}
+
+#newRequestName {
+  border-top: 2px solid rgba(213, 213, 213, 0.54);
+}
+
+#completedHeader{
+  padding: 20px 15px 30px 15px;
+}
+
+#requestHeader {
+  padding: 15px 15px 30px 15px;
+}
+
+header {
+  background-image: linear-gradient(to bottom, rgba(85, 231, 198, 0.85), rgba(255, 255, 255, 0) 100%);
+  position: relative;
+}
+
+@media(max-width:767px){
+  .col-sm-6 {
+    padding: 0px;
+  }
+  #completedHeader{
+    padding: 10px 15px 10px 15px;
+  }
+  #plexBtn, #plexBtn:hover {
+    margin-top: -3px;
+  }
+  #completedTitle {
+    padding-top: 5px;
+  }
+}
+
+#login-buttons {
+  border-radius: 6px;
+  margin-top: 0px;
+  background-color: rgba(255, 255, 255, 0.29);
+  padding: 11px;
+}
+
+#login-buttons-open-change-password {
+  margin-top: 10px;
+}
+
+#login-dropdown-list {
+  text-align: center;
+  left: -75px;
+}
+
+#login-buttons .login-close-text {
+  float: none;
+}
+
+.accounts-dialog {
+  background: rgba(255, 255, 255, 0.90);
+}
+
+.login-link-text {
+  color: white;
+}
+
+.login-link-text:hover {
+  color: black;
+}
+
+h1 {
+  font-size: 1.5em;
+  margin: 0;
+  margin-bottom: 10px;
+  display: inline-block;
+  margin-right: 1em;
+  color: white;
+}
+
+form {
+  margin-top: 10px;
+  position: relative;
+  border-radius: 5px;
+  background: @inputColor;
+}
+
+.new-request input {
+  box-sizing: border-box;
+  background: transparent;
+  border: none;
+  width: 100%;
+  font-size: 1.2em;
+  height: 40px;
+  color: rgb(237, 237, 237);
+  margin-bottom: 0px;
+  padding-left: 10px;
+}
+
+ul {
+  margin: 0;
+  padding: 0;
+  word-break: break-word;
+}
+
+.delete {
+  float: right;
+  font-weight: bold;
+  background: none;
+  font-size: 1em;
+  border: none;
+  position: relative;
+  color: rgb(171, 171, 171);
+}
+
+li {
+  position: relative;
+  list-style: none;
+  padding: 15px;
+  border-bottom: #3DA99D solid 2px;
+
+  .name{
+    color: rgba(255, 255, 255, 0.63);
+    font-size: .7em;
+  }
+}
+
+li .text {
+  margin-left: 10px;
+  color: white;
+  font-size: 1.2em;
+}
+
+li.checked {
+  color: #888;
+}
+
+li.private {
+  background: #eee;
+  border-color: #ddd;
+}
+
+header .hide-completed {
+  float: right;
+}
+
+.toggle-private {
+  margin-left: 5px;
+}
+
+@media (max-width: 600px) {
+  li {
+    padding: 12px 15px;
+  }
+
+  .search {
+    width: 150px;
+    clear: both;
+  }
+
+  .new-task input {
+    padding-bottom: 5px;
+  }
+}
