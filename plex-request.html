@@ -18,18 +18,33 @@
             {{> request}}
           {{/each}}
         </ul>
+
+        <header id="UpcomingRequestHeader">
+          <h1>Wish List<small> shows and movies not yet released</small></h1>
+          {{> upcomingRequestForm}}
+        </header>
+
+        <ul>
+          {{#each upcoming}}
+            {{> request}}
+          {{/each}}
+        </ul>
       </div>
 
       <div class="col-sm-6">
         <header id="completedHeader">
           <div class="row">
             <div class="col-xs-6 col-sm-12"><h1 id="completedTitle">Completed Requests</h1></div>
-            <div class="col-xs-6 col-sm-12"><a href="http://theia.feralhosting.com:32400/web/index.html" id="plexBtn" class="btn">Open Plex!</a></div>
+            <div class="col-xs-6 col-sm-12">
+              <div id="plexLink">
+                <a href="http://theia.feralhosting.com:32400/web/index.html" id="plexBtn" class="btn">Open Plex!</a>
+              </div>
+            </div>
           </div>
         </header>
 
         <ul>
-          {{#each requests}}
+          {{#each completes}}
             {{> completeRequest}}
           {{/each}}
         </ul>
@@ -42,6 +57,14 @@
     {{#if currentUser}}
       <form class="new-request">
           <input type="text" name="text" id="newRequestTitle" placeholder="Type in request title" />
+      </form>
+    {{/if}}
+</template>
+
+<template name="upcomingRequestForm">
+    {{#if currentUser}}
+      <form class="new-request">
+          <input type="text" name="text" id="UpcomingRequestTitle" placeholder="Type in request title" />
       </form>
     {{/if}}
 </template>
@@ -59,6 +82,7 @@
     </li>
   {{/unless}}
 </template>
+
 
 <template name="completeRequest">
   {{#if checked}}
