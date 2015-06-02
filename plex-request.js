@@ -87,7 +87,7 @@ if (Meteor.isClient) {
   });
 
   Template.registerHelper('isAdminOrOwner', function () {
-    return (Roles.userIsInRole(this._id, 'admin') || this.owner === Meteor.userId());
+    return (Roles.userIsInRole(Meteor.userId(), 'admin') || this.owner === Meteor.userId());
   });
 
   Accounts.ui.config({
@@ -170,14 +170,14 @@ if (Meteor.isServer) {
       },
       deleteTask: function (requestId) {
         var request = Requests.findOne(requestId);
-        if (request.owner !== Meteor.userId() || !Roles.userIsInRole(this._id, 'admin')) {
+        if (request.owner !== Meteor.userId() && !Roles.userIsInRole(Meteor.userId(), 'admin')) {
           throw new Meteor.Error("not-authorized");
         }
         Requests.remove(requestId);
       },
       setChecked: function (requestId, setChecked) {
         var request = Requests.findOne(requestId);
-        if (request.owner !== Meteor.userId() || !Roles.userIsInRole(this._id, 'admin')) {
+        if (request.owner !== Meteor.userId() && !Roles.userIsInRole(Meteor.userId(), 'admin')) {
           throw new Meteor.Error("not-authorized");
         }
 
