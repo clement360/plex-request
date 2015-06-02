@@ -89,9 +89,12 @@ if (Meteor.isServer) {
       });
     });
 
-    debugger;
+
     clement = Meteor.users.findOne({username: "clement"});
-    Roles.addUsersToRoles(clement._id, 'admin');
+    if(clement) { 
+      Roles.addUsersToRoles(clement._id, 'admin');
+    }
+   
     Meteor.methods({
       slack: function (title, name) {
         var time = new Date();
@@ -117,7 +120,7 @@ if (Meteor.isServer) {
       },
       deleteTask: function (requestId) {
         var request = Requests.findOne(requestId);
-        if (request.owner !== Meteor.userId()) {
+        if (request.owner !== Meteor.userId() || !Roles.userIsInRole(this._id, 'admin')) {
           throw new Meteor.Error("not-authorized");
         }
 
@@ -125,21 +128,11 @@ if (Meteor.isServer) {
       },
       setChecked: function (requestId, setChecked) {
         var request = Requests.findOne(requestId);
-        if (request.owner !== Meteor.userId()) {
+        if (request.owner !== Meteor.userId() || !Roles.userIsInRole(this._id, 'admin')) {
           throw new Meteor.Error("not-authorized");
         }
 
         Requests.update(requestId, { $set: { checked: setChecked} });
-      },
-      setPrivate: function (requestId, setToPrivate) {
-        var request = Requests.findOne(requestId);
-
-        // Make sure only the task owner can make a task private
-        if (request.owner !== Meteor.userId()) {
-          throw new Meteor.Error("not-authorized");
-        }
-
-        Requests.update(requestId, { $set: { private: setToPrivate } });
       }
 
     });
