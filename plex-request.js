@@ -6,10 +6,16 @@ if (Meteor.isClient) {
 
   Template.body.helpers({
     requests: function () {
-      return Requests.find({}, {sort: {createdAt: -1}});
+      return Requests.find({upcoming: false}, {sort: {createdAt: -1}});
     },
     incompleteCount: function () {
-      return Requests.find({checked: {$ne: true}}).count();
+      return Requests.find({checked: false}).count();
+    }, 
+    upcoming: function () {
+      return Requests.find({upcoming: true}, {sort: {createdAt: -1}});
+    },
+    completes: function () {
+      return Requests.find({}, {sort: {completedAt: -1}});
     }
   });
 
@@ -24,20 +30,41 @@ if (Meteor.isClient) {
         Meteor.call("addTask", title);
         Meteor.call('slack', title, Meteor.user().username);
       };
-
       return false;
     }
   });
 
   Template.request.events({
-  	"click .toggle-checked": function () {
+    "click .toggle-checked": function () {
       Meteor.call("setChecked", this._id, ! this.checked);
-  	},
-  	"click .delete": function () {
-  		Meteor.call("deleteTask", this._id);
-  	},
-    "click .toggle-private": function () {
-      Meteor.call("setPrivate", this._id, ! this.private);
+    },
+    "click .delete": function () {
+      Meteor.call("deleteTask", this._id);
+    }
+  });
+
+
+  Template.upcomingRequestForm.events({
+    'submit form': function(){
+      var title = $('#UpcomingRequestTitle').val();
+
+      if (title.length < 1) {
+        $('#UpcomingRequestTitle').effect( "shake" );
+      } else {
+        $('#UpcomingRequestTitle').val('');
+        Meteor.call("addUpcoming", title);
+        Meteor.call('slack', title, Meteor.user().username);
+      };
+      return false;
+    }
+  });
+
+  Template.upcomingRequestForm.events({
+    "click .toggle-checked": function () {
+      Meteor.call("setChecked", this._id, ! this.checked);
+    },
+    "click .delete": function () {
+      Meteor.call("deleteTask", this._id);
     }
   });
 
@@ -81,38 +108,62 @@ if (Meteor.isServer) {
     })
 
     Meteor.publish("requests", function () {
-      return Requests.find({
-        $or: [
-          { private: {$ne: true} },
-          { owner: this.userId }
-        ]
-      });
+      return Requests.find({});
     });
 
-    debugger;
     clement = Meteor.users.findOne({username: "clement"});
-    Roles.addUsersToRoles(clement._id, 'admin');
+    if(clement) {
+      Roles.addUsersToRoles(clement._id, 'admin');
+    }
+    
     Meteor.methods({
       slack: function (title, name) {
+        if (! Meteor.userId()) {
+          throw new Meteor.Error("not-authorized");
+        }
+
         var time = new Date();
         time = moment(time).format('l LT');
 
         var icon_url = "http%3A%2F%2Ficons.iconarchive.com%2Ficons%2Fthebadsaint%2Fmy-mavericks-part-2%2F128%2FPlex-icon.png";
         var postMessage = "New plex request from " + name + ": " + title + " @ " + time;
-        var token = Meteor.settings.slack.token;
-        HTTP.post("https://slack.com/api/chat.postMessage?token="+token+"&channel=C051U8PCQ&text="+postMessage+"&username=Plex%20Request%20Bot&icon_url="+icon_url+"&pretty=1");
+        
+        if(Meteor.settings.slack) {
+          var token = Meteor.settings.slack.token;
+          HTTP.post("https://slack.com/api/chat.postMessage?token="+token+"&channel=C051U8PCQ&text="+postMessage+"&username=Plex%20Request%20Bot&icon_url="+icon_url+"&pretty=1");
+        } else {
+          console.log('Debugging mode: no slack token set');
+        }
       },
 
-      addTask: function (title, time) {
+      addTask: function (title) {
         if (! Meteor.userId()) {
           throw new Meteor.Error("not-authorized");
         }
+
         var time = new Date();
         Requests.insert({
           title: title,
+          upcoming: false,
           owner: Meteor.userId(),
           name: Meteor.user().username,     
-          createdAt: time
+          createdAt: time,
+          completedAt: null
+        });
+      },
+      addUpcoming: function (title) {
+        if (! Meteor.userId()) {
+          throw new Meteor.Error("not-authorized");
+        }
+
+        var time = new Date();
+        Requests.insert({
+          title: title,
+          upcoming: true,
+          owner: Meteor.userId(),
+          name: Meteor.user().username,     
+          createdAt: time,
+          completedAt: null
         });
       },
       deleteTask: function (requestId) {
@@ -129,19 +180,8 @@ if (Meteor.isServer) {
           throw new Meteor.Error("not-authorized");
         }
 
-        Requests.update(requestId, { $set: { checked: setChecked} });
-      },
-      setPrivate: function (requestId, setToPrivate) {
-        var request = Requests.findOne(requestId);
-
-        // Make sure only the task owner can make a task private
-        if (request.owner !== Meteor.userId()) {
-          throw new Meteor.Error("not-authorized");
-        }
-
-        Requests.update(requestId, { $set: { private: setToPrivate } });
+        Requests.update(requestId, { $set: { checked: setChecked, completedAt: new Date() } });
       }
-
     });
 
   });
