@@ -8,7 +8,7 @@
     <div class="row">
       <div class="col-sm-6">
         <header id="requestHeader">
-          <h1>Plex Requests ({{incompleteCount}})</h1>
+          <h1>Plex Requests</h1>
           {{> loginButtons}}
           {{> requestForm}}
         </header>
@@ -50,8 +50,25 @@
         </ul>
       </div>
     </div>
+    {{#if currentUser}}
+      {{#unless isInRole 'subscriber'}}
+        <footer>
+          <div id="emailFooter">
+              {{> emailForm}}
+          </div>
+        </footer>
+      {{/unless}}
+    {{/if}}
   </div>
+
 </body>
+
+<template name="emailForm">
+  <h5>Get notified when your request completes</h5>
+  <form class="new-request">
+    <input type="text" name="text" id="userEmail" placeholder="Enter in your email" />
+  </form>
+</template>
 
 <template name="requestForm">
     {{#if currentUser}}

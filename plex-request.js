@@ -3,19 +3,35 @@ Requests = new Mongo.Collection("requests");
 if (Meteor.isClient) {
 
   Meteor.subscribe("requests");
+  Meteor.subscribe("userData");
+
+  debugger;
 
   Template.body.helpers({
     requests: function () {
       return Requests.find({upcoming: false}, {sort: {createdAt: -1}});
     },
-    incompleteCount: function () {
-      return Requests.find({checked: false}).count();
-    }, 
     upcoming: function () {
       return Requests.find({upcoming: true}, {sort: {createdAt: -1}});
     },
     completes: function () {
       return Requests.find({}, {sort: {completedAt: -1}});
+    }
+  });
+
+  Template.emailForm.events({
+    'submit form': function(){
+      var email = $('#userEmail').val();
+
+      if (email.length < 1) {
+        $('#userEmail').effect( "shake" );
+      } else {
+        $('#emailFooter').fadeOut();
+        toastr.success('you\'ll be notified now', 'Great it worked!');
+        $('#userEmail').val('');
+        Meteor.call("addEmail", email);
+      };
+      return false;
     }
   });
 
@@ -111,6 +127,13 @@ if (Meteor.isServer) {
       return Requests.find({});
     });
 
+    Meteor.publish("userData", function() {
+    if (this.userId) {
+   return Meteor.users.find(
+     {_id: this.userId},
+     {fields: {email: 1}});
+ }
+});
 
     clement = Meteor.users.findOne({username: "clement"});
     if(clement) {
@@ -152,7 +175,13 @@ if (Meteor.isServer) {
           completedAt: null
         });
       },
-
+      addEmail: function (email) {
+        if (! Meteor.userId()) {
+          throw new Meteor.Error("not-authorized");
+        }
+        Roles.addUsersToRoles(Meteor.userId(), 'subscriber');
+        Meteor.users.update(Meteor.userId(), { $set: { email: email } });
+      },
       addUpcoming: function (title) {
         if (! Meteor.userId()) {
           throw new Meteor.Error("not-authorized");
