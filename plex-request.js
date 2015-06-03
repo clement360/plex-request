@@ -216,29 +216,33 @@ if (Meteor.isServer) {
         });
       },
       setChecked: function (requestId, setChecked) {
+        this.unblock();
+
         var request = Requests.findOne(requestId);
         if (request.owner !== Meteor.userId() && !Roles.userIsInRole(Meteor.userId(), 'admin')) {
           throw new Meteor.Error("not-authorized");
         }
 
+        // update the status
+        Requests.update(requestId, { $set: { checked: setChecked, completedAt: new Date() } });
+
+        // send confirmation email
         var owner = Meteor.users.findOne(request.owner);
         console.log('Sending Email to: '+owner.email);
 
-        if (owner.email) {
+        if (owner.email && setChecked === true) {
           var to = owner.email;
-          var from = 'Plex Request Auto Emailer';
+          var from = 'miguelfclement@gmail.com';
           var subject = 'Plex Request Completed!';
-          var message = '<h2>Hey '+ owner.username +',</h2>' 
-                        +'<h4>Your request for <strong>' +
+          var message = '<h2>Hey '+ owner.username +',</h2>' +
+                        '<h4>Your request for <strong>' +
                           request.title + '</strong> has been completed.' +
                         '</h4>' +
                         '<br />' +
-                        'Go watch it on <a href="http://theia.feralhosting.com:32400/web/index.html"> plex </a>now!';
+                        'Go watch it on <a href=\'http://theia.feralhosting.com:32400/web/index.html\'> plex </a>now!';
 
           Meteor.call('sendEmail', to, from, subject, message);
         }
-
-        Requests.update(requestId, { $set: { checked: setChecked, completedAt: new Date() } });
       }
     });
 
