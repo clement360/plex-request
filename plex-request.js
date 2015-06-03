@@ -5,8 +5,6 @@ if (Meteor.isClient) {
   Meteor.subscribe("requests");
   Meteor.subscribe("userData");
 
-  debugger;
-
   Template.body.helpers({
     requests: function () {
       return Requests.find({upcoming: false}, {sort: {createdAt: -1}});
@@ -116,24 +114,26 @@ if (Meteor.isClient) {
 ----------------- S E R V E R ---------------------
 -------------------------------------------------*/
 
-
 if (Meteor.isServer) {
+
   Meteor.startup(function () {
+
     Meteor.publish(null, function (){ 
       return Meteor.roles.find({})
-    })
+    });
 
     Meteor.publish("requests", function () {
       return Requests.find({});
     });
 
     Meteor.publish("userData", function() {
-    if (this.userId) {
-   return Meteor.users.find(
-     {_id: this.userId},
-     {fields: {email: 1}});
- }
-});
+      if (this.userId) {
+        return Meteor.users.find(
+          {_id: this.userId},
+          {fields: {email: 1}
+        });
+      }
+    });
 
     clement = Meteor.users.findOne({username: "clement"});
     if(clement) {
@@ -159,7 +159,6 @@ if (Meteor.isServer) {
           console.log('Debugging mode: no slack token set');
         }
       },
-
       addTask: function (title) {
         if (! Meteor.userId()) {
           throw new Meteor.Error("not-authorized");
@@ -204,10 +203,39 @@ if (Meteor.isServer) {
         }
         Requests.remove(requestId);
       },
+      sendEmail: function (to, from, subject, text) {
+        check([to, from, subject, text], [String]);
+
+        this.unblock()
+
+        Email.send({
+          to: to,
+          from: from,
+          subject: subject,
+          html: text
+        });
+      },
       setChecked: function (requestId, setChecked) {
         var request = Requests.findOne(requestId);
         if (request.owner !== Meteor.userId() && !Roles.userIsInRole(Meteor.userId(), 'admin')) {
           throw new Meteor.Error("not-authorized");
+        }
+
+        var owner = Meteor.users.findOne(request.owner);
+        console.log('Sending Email to: '+owner.email);
+
+        if (owner.email) {
+          var to = owner.email;
+          var from = 'Plex Request Auto Emailer';
+          var subject = 'Plex Request Completed!';
+          var message = '<h2>Hey '+ owner.username +',</h2>' 
+                        +'<h4>Your request for <strong>' +
+                          request.title + '</strong> has been completed.' +
+                        '</h4>' +
+                        '<br />' +
+                        'Go watch it on <a href="http://theia.feralhosting.com:32400/web/index.html"> plex </a>now!';
+
+          Meteor.call('sendEmail', to, from, subject, message);
         }
 
         Requests.update(requestId, { $set: { checked: setChecked, completedAt: new Date() } });
@@ -215,4 +243,5 @@ if (Meteor.isServer) {
     });
 
   });
+
 }
